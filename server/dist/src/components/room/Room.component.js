@@ -15,7 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const socket_1 = __importDefault(require("../../connections/socket"));
 const App_1 = require("../../App");
 const Room_method_1 = require("./Room.method");
+const events_1 = __importDefault(require("events"));
 let IO;
+const events = new (events_1.default.EventEmitter)();
+process.setMaxListeners(0);
 function RoomComponent() {
     return __awaiter(this, void 0, void 0, function* () {
         IO = (new socket_1.default(App_1.http.http, "/room")).io;
@@ -32,9 +35,12 @@ function roomRest() {
 function roomSocket() {
     return __awaiter(this, void 0, void 0, function* () {
         IO.on("connection", (socket) => {
-            socket.emit('message', 'hello!');
-            socket.on("message", (msg) => {
-                console.log(msg);
+            socket.on("new", (msg) => {
+                const data = JSON.parse(msg);
+                events.emit('new', data);
+            });
+            events.on('new', data => {
+                socket.emit('new', data);
             });
         });
     });

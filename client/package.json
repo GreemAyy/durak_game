@@ -10,6 +10,7 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
+    "ky": "^0.33.3",
     "pug": "^3.0.2",
     "socket.io-client": "^4.7.2",
     "vite-plugin-pug": "^0.3.2",
