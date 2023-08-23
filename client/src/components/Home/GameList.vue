@@ -1,35 +1,46 @@
 <script lang="ts" setup>
 import SingleGame from './SingleRoom.vue'
+import {type IRes} from '../../tools/interfaces'
 import { io } from 'socket.io-client';
-import { _URL } from '../../constants.ts'
+import { _URL } from '../../constants'
 import {useStore} from 'vuex'
-import {queryCreateRoom} from '../../querys/Room.query.ts'
-import {reactive} from 'vue'
+import {queryCreateRoom, queryGetRoomsList} from '../../querys/Room.query.ts'
+import {reactive,onMounted} from 'vue'
 
 const socket = io(_URL,{path:'/room'})
 const store =useStore()
-const gameList = reactive([])
+const gameList = reactive<IRes[]>([])
+
+onMounted(async()=>{
+    const req =await queryGetRoomsList()
+    if(req.status==200&&req?.result){
+       gameList.push(...req?.result)
+    }
+})
 
 const create=async()=>{
-    // if(store.state.userStore.id!=null){
-    //     const req = await queryCreateRoom(store.state.userStore.id)
-    //     if(req.status==200&&req.responseText=='created'){
-
-    //     }
-    // }
-    socket.emit('new',
-    JSON.stringify({gameID:0,userID:0}))
+    if(store.state.userStore.id!=null){
+        const req:IRes = await queryCreateRoom(store.state.userStore.id)
+        if(req.status==200&&req.responseText=='created'){
+            socket.emit('new',
+                JSON.stringify({gameID:req.gameID}))
+        }
+        if(req.status==400&&req.responseText=='already')
+            console.log('У вас уже есть созданная игра')
+    }
+    
 }
 
-socket.on('new',msg=>{
-    gameList.push(msg)
-})
+socket.on('new',async msg=>gameList.push(msg))
 </script>
 
 <template lang="pug">
-.create-game(@click='create') Создать игру
-.games-list
-    SingleGame(v-for='item of gameList' :item='item')
+.create-game( v-if='store.state.userStore.id!=null' @click='create') Создать игру
+.games-list(v-if='gameList.length>0') {{gameList.length==0?'Нет начатых игр!':''}}
+    SingleGame( v-for='item of gameList' 
+                v-if='gameList.length>0'
+                :item='item')
+
 </template>
 
 <style lang="scss">

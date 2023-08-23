@@ -1,7 +1,7 @@
 import socket from "../../connections/socket";
 import { http } from "../../App";
 import { Server } from "socket.io";
-import { APIConnectGame, APICreateGame } from "./Room.method";
+import { APIConnectGame, APICreateGame,APIGetGamesList, getGameByID } from "./Room.method";
 import E from 'events'
 let IO: Server;
 
@@ -17,17 +17,16 @@ async function RoomComponent() {
 async function roomRest() {
     await APICreateGame()
     await APIConnectGame()
+    await APIGetGamesList()
 }
 
 async function roomSocket() {
   IO.on("connection", (socket) => {
-    socket.on("new", (msg) => {
+    socket.on("new",async (msg) => {
       const data= JSON.parse(msg)
-      events.emit('new',data)
+      const getGame = await getGameByID(data.gameID)
+      IO.emit('new',getGame?.[0])
     });
-    events.on('new',data=>{
-        socket.emit('new',data)
-    })
   });
 }
 

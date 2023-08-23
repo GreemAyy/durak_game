@@ -4,7 +4,7 @@ const props = defineProps(['item'])
 
 <template lang="pug">
 .game-item()
-    .game-number() Игра №{{item.gameID}}
+    .game-number() Игра №{{item.id}}
     .connect-btn() Присоедениться
 </template>
 

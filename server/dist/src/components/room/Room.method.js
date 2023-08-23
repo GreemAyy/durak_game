@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.APIConnectGame = exports.APICreateGame = void 0;
+exports.APIConnectGame = exports.getGameByID = exports.APIGetGamesList = exports.APICreateGame = void 0;
 const createDeck_1 = require("../../gameFunctions/createDeck");
 const App_1 = require("../../App");
 const Room_query_1 = require("../../querys/Room.query");
@@ -32,6 +32,23 @@ function APICreateGame() {
     });
 }
 exports.APICreateGame = APICreateGame;
+function APIGetGamesList() {
+    return __awaiter(this, void 0, void 0, function* () {
+        App_1.app.get('/api/room/list', (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const DBReq = yield App_1.DB.query("SELECT `id`, `player_1_id`, `player_2_id`, `status` FROM `game` WHERE `status`='wait'");
+            if (DBReq.result)
+                res.send({ status: 200, responseText: 'getted', result: DBReq.result });
+            else
+                res.send({ status: 400, responseText: 'error' });
+        }));
+    });
+}
+exports.APIGetGamesList = APIGetGamesList;
+const getGameByID = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const DBReq = yield App_1.DB.query('SELECT `id`, `player_1_id`, `player_2_id`, `status` FROM `game` WHERE id=' + id);
+    return DBReq.result;
+});
+exports.getGameByID = getGameByID;
 function APIConnectGame() {
     return __awaiter(this, void 0, void 0, function* () {
         App_1.app.post('/api/room/connect', (req, res) => __awaiter(this, void 0, void 0, function* () {

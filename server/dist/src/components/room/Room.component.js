@@ -30,18 +30,17 @@ function roomRest() {
     return __awaiter(this, void 0, void 0, function* () {
         yield (0, Room_method_1.APICreateGame)();
         yield (0, Room_method_1.APIConnectGame)();
+        yield (0, Room_method_1.APIGetGamesList)();
     });
 }
 function roomSocket() {
     return __awaiter(this, void 0, void 0, function* () {
         IO.on("connection", (socket) => {
-            socket.on("new", (msg) => {
+            socket.on("new", (msg) => __awaiter(this, void 0, void 0, function* () {
                 const data = JSON.parse(msg);
-                events.emit('new', data);
-            });
-            events.on('new', data => {
-                socket.emit('new', data);
-            });
+                const getGame = yield (0, Room_method_1.getGameByID)(data.gameID);
+                IO.emit('new', getGame === null || getGame === void 0 ? void 0 : getGame[0]);
+            }));
         });
     });
 }

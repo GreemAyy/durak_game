@@ -21,6 +21,21 @@ export async function APICreateGame(){
     })
 }
 
+export async function APIGetGamesList(){
+    app.get('/api/room/list',async(req,res)=>{
+        const DBReq= await DB.query("SELECT `id`, `player_1_id`, `player_2_id`, `status` FROM `game` WHERE `status`='wait'")
+        if(DBReq.result)
+            res.send({status:200,responseText:'getted',result:DBReq.result})
+        else
+            res.send({status:400,responseText:'error'})
+        })
+}
+
+export const getGameByID=async(id:number|string)=>{
+    const DBReq= await DB.query('SELECT `id`, `player_1_id`, `player_2_id`, `status` FROM `game` WHERE id='+id)
+    return DBReq.result
+}
+
 export async function APIConnectGame(){
     app.post('/api/room/connect',async(req,res)=>{
         const gameID= req.body.gameID
