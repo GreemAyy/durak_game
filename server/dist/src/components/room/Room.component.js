@@ -15,9 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const socket_1 = __importDefault(require("../../connections/socket"));
 const App_1 = require("../../App");
 const Room_method_1 = require("./Room.method");
-const events_1 = __importDefault(require("events"));
 let IO;
-const events = new (events_1.default.EventEmitter)();
 process.setMaxListeners(0);
 function RoomComponent() {
     return __awaiter(this, void 0, void 0, function* () {

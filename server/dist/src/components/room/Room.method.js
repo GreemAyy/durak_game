@@ -35,7 +35,7 @@ exports.APICreateGame = APICreateGame;
 function APIGetGamesList() {
     return __awaiter(this, void 0, void 0, function* () {
         App_1.app.get('/api/room/list', (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const DBReq = yield App_1.DB.query("SELECT `id`, `player_1_id`, `player_2_id`, `status` FROM `game` WHERE `status`='wait'");
+            const DBReq = yield App_1.DB.query("SELECT `id`, `player_1_id`, `player_2_id`, `status` FROM `game` WHERE `status`<>'end'");
             if (DBReq.result)
                 res.send({ status: 200, responseText: 'getted', result: DBReq.result });
             else
@@ -58,11 +58,10 @@ function APIConnectGame() {
             const checkStatus = yield App_1.DB.query((0, Room_query_1.queryRoomCheckStatus)(gameID));
             const checkUserHaveGame = yield App_1.DB.query((0, Room_query_1.queryRoomCheckInGame)(playerID));
             //  
+            const result = checkStatus.result[0];
             if (checkStatus.result && ((_a = checkUserHaveGame.result) === null || _a === void 0 ? void 0 : _a.length) == 0) {
-                const result = checkStatus.result[0];
-                if (result.status == 'wait' &&
-                    (result['player_1_id'] == playerID || result['player_2_id'] == playerID))
-                    /*->*/ res.send({ status: 200, responseText: 'already' });
+                if (result.status == 'wait' && result['player_1_id'] == playerID)
+                    /*->*/ res.send({ status: 200, responseText: 'wait' });
                 //
                 else if (result.status == 'wait' && result['player_1_id'] != playerID) {
                     const query = (0, Room_query_1.queryRoomConnect)({ gameID, playerID, status: 'game', position: 2 });
@@ -74,9 +73,14 @@ function APIConnectGame() {
                 else if (result.status == 'game' &&
                     (result['player_1_id'] != playerID || result['player_2_id'] != playerID))
                     /*->*/ res.send({ status: 400, responseText: 'no' });
+                else
+                    /*->*/ res.send({ status: 200, responseText: 'connected' });
             }
-            else if (((_b = checkUserHaveGame.result) === null || _b === void 0 ? void 0 : _b.length) > 0)
-                res.send({ status: 400, responseText: 'already' });
+            else if ((result === null || result === void 0 ? void 0 : result.status) != 'end' && ((result === null || result === void 0 ? void 0 : result['player_1_id']) == playerID ||
+                (result === null || result === void 0 ? void 0 : result['player_2_id']) == playerID))
+                res.send({ status: 200, responseText: 'connected' });
+            else if (((_b = checkUserHaveGame === null || checkUserHaveGame === void 0 ? void 0 : checkUserHaveGame.result) === null || _b === void 0 ? void 0 : _b.length) > 0)
+                res.send({ status: 200, responseText: 'already' });
             else
                 res.send({ status: 404, responseText: 'error' });
         }));

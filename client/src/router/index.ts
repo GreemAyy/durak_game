@@ -7,9 +7,13 @@ const router = createRouter({
   routes: [
     {
       path: '/home',
-      name: 'home',
       //@ts-ignore
       component: ()=>import('../views/Home.vue')
+    },
+    {
+      path:'/game/:id',
+      //@ts-ignore
+      component:()=>import('../views/Game.vue')
     }
   ]
 })

@@ -2,10 +2,8 @@ import socket from "../../connections/socket";
 import { http } from "../../App";
 import { Server } from "socket.io";
 import { APIConnectGame, APICreateGame,APIGetGamesList, getGameByID } from "./Room.method";
-import E from 'events'
 let IO: Server;
 
-const events = new (E.EventEmitter)() 
 process.setMaxListeners(0)
 
 async function RoomComponent() {

@@ -23,7 +23,7 @@ export async function APICreateGame(){
 
 export async function APIGetGamesList(){
     app.get('/api/room/list',async(req,res)=>{
-        const DBReq= await DB.query("SELECT `id`, `player_1_id`, `player_2_id`, `status` FROM `game` WHERE `status`='wait'")
+        const DBReq= await DB.query("SELECT `id`, `player_1_id`, `player_2_id`, `status` FROM `game` WHERE `status`<>'end'")
         if(DBReq.result)
             res.send({status:200,responseText:'getted',result:DBReq.result})
         else
@@ -43,11 +43,10 @@ export async function APIConnectGame(){
         const checkStatus= await DB.query(queryRoomCheckStatus(gameID))
         const checkUserHaveGame = await DB.query(queryRoomCheckInGame(playerID))
         //  
+        const result = checkStatus.result[0]
         if(checkStatus.result &&checkUserHaveGame.result?.length==0){
-            const result = checkStatus.result[0]
-            if(result.status=='wait'&&
-            (result['player_1_id']==playerID||result['player_2_id']==playerID))
-               /*->*/ res.send({status:200,responseText:'already'})
+            if(result.status=='wait'&&result['player_1_id']==playerID)
+               /*->*/ res.send({status:200,responseText:'wait'})
             //
             else if(result.status=='wait'&&result['player_1_id']!=playerID){
                 const query= queryRoomConnect({gameID,playerID,status:'game',position:2})
@@ -58,9 +57,14 @@ export async function APIConnectGame(){
             else if(result.status=='game'&&
             (result['player_1_id']!=playerID||result['player_2_id']!=playerID))
                 /*->*/ res.send({status:400,responseText:'no'})
-        }
-        else if(checkUserHaveGame.result?.length>0)
-                res.send({status:400,responseText:'already'})
+            else
+               /*->*/ res.send({status:200,responseText:'connected'})
+            }
+        else if(result?.status!='end'&&(result?.['player_1_id']==playerID||
+                                            result?.['player_2_id']==playerID))
+            res.send({status:200,responseText:'connected'})
+        else if(checkUserHaveGame?.result?.length>0)
+                res.send({status:200,responseText:'already'})
         else res.send({status:404,responseText:'error'})
     })
 }
