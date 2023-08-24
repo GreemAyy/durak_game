@@ -44,7 +44,6 @@ export async function APIConnectGame(){
         const checkUserHaveGame = await DB.query(queryRoomCheckInGame(playerID))
         
         const result = checkStatus.result[0]
-        console.log(checkUserHaveGame.result)
         if(result&&checkUserHaveGame.result?.length==0){
             if(result?.status=='wait'&&result['player_1_id']==playerID)
                /*->*/ res.send({status:200,responseText:'wait'})

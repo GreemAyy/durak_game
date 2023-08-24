@@ -58,7 +58,6 @@ function APIConnectGame() {
             const checkStatus = yield App_1.DB.query((0, Room_query_1.queryRoomCheckStatus)(gameID));
             const checkUserHaveGame = yield App_1.DB.query((0, Room_query_1.queryRoomCheckInGame)(playerID));
             const result = checkStatus.result[0];
-            console.log(checkUserHaveGame.result);
             if (result && ((_a = checkUserHaveGame.result) === null || _a === void 0 ? void 0 : _a.length) == 0) {
                 if ((result === null || result === void 0 ? void 0 : result.status) == 'wait' && result['player_1_id'] == playerID)
                     /*->*/ res.send({ status: 200, responseText: 'wait' });

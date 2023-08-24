@@ -10,7 +10,6 @@ const GameComponent=async()=>{
     await moveGame()
 }
 
-
 async function gameSocket(){
     IO.on('connection',socket=>{
         socket.on('join',async(data:string)=>{
@@ -25,6 +24,5 @@ async function gameSocket(){
     })
 
 }
-
 
 export default GameComponent

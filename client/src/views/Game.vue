@@ -2,6 +2,7 @@
 import CardZone from '@/components/Game/CardZone.vue';
 import PlayerCardBlock from '@/components/Game/PlayerCardBlock.vue';
 import EnemyCardBlock from '@/components/Game/EnemyCardBlock.vue';
+import Buttons from '@/components/Game/Buttons.vue';
 import {queryGameMove} from '../querys/Game.query'
 import { _URL } from '@/constants';
 import { Socket, io } from 'socket.io-client';
@@ -13,8 +14,8 @@ import {queryConnectRoom} from '../querys/Room.query'
 import {type IDeck, type IResDeck} from '../tools/interfaces'
 
 const socket = io(_URL,{path:'/room'})
-const route=useRoute()
-const store=useStore()
+const route = useRoute()
+const store = useStore()
 const gameID = Number(route.params.id)
 const userID = store.state.userStore.id
 const gameSocket = ref<Socket>()
@@ -64,6 +65,7 @@ const move=async()=>{
     EnemyCardBlock(:deck='deck')
     CardZone(@move='move' :deck='deck')
     PlayerCardBlock(:deck='deck')
+    Buttons(@lose='' @end=''  :deck='deck')
 .wait(v-else) wait
 </template>
 
