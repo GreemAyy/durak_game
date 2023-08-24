@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted } from 'vue';
+//@ts-ignore
 import {useStore} from 'vuex'
 import { type IResDeck ,type IDeck} from '@/tools/interfaces';
 import C from '../../images/С.png'
@@ -15,7 +16,7 @@ const store = useStore()
 const props = defineProps<IProps>()
 const side = computed(()=>props.deck.side)
 const id = store.state.userStore.id
-const playerSide = computed(()=>props.deck.player_1_id==id?1:2)
+const playerSide = computed(()=>props.deck.player_1_id==id?2:1)
 const deck =computed<IDeck[]>(()=>playerSide.value==1?props.deck.player_1_deck:props.deck.player_2_deck)
 
 </script>

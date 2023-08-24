@@ -1,12 +1,13 @@
 import socket from "../../connections/socket"
 import { Server } from "socket.io"
 import { http } from "../../App";
-import { getGame } from "./Game.method";
+import { getGame, moveGame } from "./Game.method";
 let IO:Server;
 
 const GameComponent=async()=>{
     IO = (new socket(http.http, "/game")).io;
     await gameSocket()
+    await moveGame()
 }
 
 

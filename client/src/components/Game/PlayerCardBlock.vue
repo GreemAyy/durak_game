@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted } from 'vue';
+//@ts-ignore
 import {useStore} from 'vuex'
 import { type IResDeck ,type IDeck} from '@/tools/interfaces';
 import C from '../../images/С.png'
@@ -18,11 +19,16 @@ const id = store.state.userStore.id
 const playerSide = computed(()=>props.deck.player_1_id==id?1:2)
 const deck =computed<IDeck[]>(()=>playerSide.value==1?props.deck.player_1_deck:props.deck.player_2_deck)
 
+const pick=(card:IDeck,index:number)=>{
+   if(playerSide.value==side.value)
+    store.commit('setCard',{card,index,side:playerSide.value,changeSide:side.value==1?2:1})
+}
+
 </script>
 
 <template lang="pug">
-.player-deck()
-    .single-card(v-for='(card,index) of deck' )
+.player-deck(:class='{unclickable:playerSide!=side}')
+    .single-card(v-for='(card,index) of deck' @click='pick(card,index)')
         .card-side.upper-side()
             .card-value() {{values[card.value]}}
             .card-sign()   
@@ -34,6 +40,10 @@ const deck =computed<IDeck[]>(()=>playerSide.value==1?props.deck.player_1_deck:p
 </template>
 
 <style lang="scss" scoped>
+    .unclickable{
+        pointer-events: none;
+        opacity: .5;
+    }
     .player-deck{
         justify-content: end;
         display: flex;

@@ -1,10 +1,10 @@
 const gameStore={
     state:()=>({
-        card:null
+        pickedCard:null
     }),
     mutations:{
         setCard(state,card){
-            state.card=card
+            state.pickedCard=card
         }
     }
 }
