@@ -28,8 +28,7 @@ onMounted(async()=>{
     if(resText=='wait'||resText=='connected'){
         gameSocket.value = io(_URL,{path:'/game'})
         gameSocket.value.on('join',(msg)=>{
-            if(msg)
-                gameSocket.value?.emit('set',gameID)
+            if(msg) gameSocket.value?.emit('set',gameID)
         })
         gameSocket.value.on('set',(msg:IResDeck)=>{
             status.value='connected'
@@ -37,8 +36,7 @@ onMounted(async()=>{
             deck.value=msg
         })
         gameSocket.value.emit('join',JSON.stringify(
-            {gameID,type:resText}
-        ))
+            {gameID,type:resText}))
     }
 })
 
@@ -47,25 +45,24 @@ const move=async()=>{
     let playerDeck = pickedCard.side==1?deck?.value.player_1_deck:deck?.value.player_2_deck
     //@ts-ignore
     const gameZone:IDeck[][]=deck?.value.playzone_deck
-    if(gameZone.length==0)
-        gameZone.push([pickedCard.card])
+    
+    if(gameZone.length==0) gameZone.push([pickedCard.card])
     else if(gameZone[gameZone.length-1].length<2)
         gameZone[gameZone.length-1].push(pickedCard.card)  
     else gameZone.push([pickedCard.card])
+    
     playerDeck=playerDeck.filter((_,index)=>index!=pickedCard.index)
     const total = {playerDeck,gamezone:gameZone,side:pickedCard.side,changeSide:pickedCard.changeSide,id:gameID}
-    const req:any= await queryGameMove(total)
-    if(req.status==200)
-        gameSocket.value?.emit('set',gameID)
+    const req:any = await queryGameMove(total)
+    if(req.status==200) gameSocket.value?.emit('set',gameID)
+    store.commit('setCard',null)
 }   
 </script>
 
 <template lang="pug">
 .game(v-if='status!="wait"')
     EnemyCardBlock(:deck='deck')
-    CardZone(
-        @move='move'
-        :deck='deck')
+    CardZone(@move='move' :deck='deck')
     PlayerCardBlock(:deck='deck')
 .wait(v-else) wait
 </template>
