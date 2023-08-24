@@ -12,10 +12,14 @@ const GameComponent=async()=>{
 
 async function gameSocket(){
     IO.on('connection',socket=>{
-        socket.on('join',async(id:string)=>{
-        socket.join(id)
-        const req = await getGame(id)
-        IO.to(id).emit('join',req)
+        socket.on('join',async(data:string)=>{
+            const parse = JSON.parse(data)
+            socket.join(parse.gameID)
+            IO.to(parse.gameID).emit('join',parse.type=='wait'?false:true)
+        })
+        socket.on('set',async(id:string)=>{
+            const req = await getGame(id)
+            IO.to(id).emit('set',req)
         })
     })
 

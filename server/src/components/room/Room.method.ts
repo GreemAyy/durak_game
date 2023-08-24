@@ -42,24 +42,27 @@ export async function APIConnectGame(){
         const playerID = req.body.playerID;
         const checkStatus= await DB.query(queryRoomCheckStatus(gameID))
         const checkUserHaveGame = await DB.query(queryRoomCheckInGame(playerID))
-        //  
+        
         const result = checkStatus.result[0]
-        if(checkStatus.result &&checkUserHaveGame.result?.length==0){
-            if(result.status=='wait'&&result['player_1_id']==playerID)
+        console.log(checkUserHaveGame.result)
+        if(result&&checkUserHaveGame.result?.length==0){
+            if(result?.status=='wait'&&result['player_1_id']==playerID)
                /*->*/ res.send({status:200,responseText:'wait'})
             //
-            else if(result.status=='wait'&&result['player_1_id']!=playerID){
+            else if(result?.status=='wait'&&result['player_1_id']!=playerID){
                 const query= queryRoomConnect({gameID,playerID,status:'game',position:2})
                 const connect= await DB.query(query)
                 res.send({status:connect.error?400:200,
                         responseText:connect.error?'error':'connected'})}
             //
-            else if(result.status=='game'&&
+            else if(result?.status=='game'&&
             (result['player_1_id']!=playerID||result['player_2_id']!=playerID))
                 /*->*/ res.send({status:400,responseText:'no'})
             else
                /*->*/ res.send({status:200,responseText:'connected'})
             }
+        else if(result?.status=='wait'&&result['player_1_id']==playerID)
+        /*->*/ res.send({status:200,responseText:'wait'})    
         else if(result?.status!='end'&&(result?.['player_1_id']==playerID||
                                             result?.['player_2_id']==playerID))
             res.send({status:200,responseText:'connected'})
