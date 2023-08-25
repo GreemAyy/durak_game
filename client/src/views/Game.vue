@@ -3,7 +3,7 @@ import CardZone from '@/components/Game/CardZone.vue';
 import PlayerCardBlock from '@/components/Game/PlayerCardBlock.vue';
 import EnemyCardBlock from '@/components/Game/EnemyCardBlock.vue';
 import Buttons from '@/components/Game/Buttons.vue';
-import {queryGameMove} from '../querys/Game.query'
+import {queryGameMove, queryGameRound} from '../querys/Game.query'
 import { _URL } from '@/constants';
 import { Socket, io } from 'socket.io-client';
 import { onMounted ,reactive,ref, type Ref} from 'vue';
@@ -58,6 +58,21 @@ const move=async()=>{
     if(req.status==200) gameSocket.value?.emit('set',gameID)
     store.commit('setCard',null)
 }   
+
+const end=async(data:any)=>{
+    const req = await queryGameRound(data)
+    //@ts-ignore
+    if(req.status==200)
+        gameSocket.value?.emit('set',gameID)
+}
+
+const lose=async(data:any)=>{
+    const req = await queryGameRound(data)
+    //@ts-ignore
+    if(req.status==200)
+        gameSocket.value?.emit('set',gameID)
+}
+
 </script>
 
 <template lang="pug">
@@ -65,7 +80,7 @@ const move=async()=>{
     EnemyCardBlock(:deck='deck')
     CardZone(@move='move' :deck='deck')
     PlayerCardBlock(:deck='deck')
-    Buttons(@lose='' @end=''  :deck='deck')
+    Buttons(@lose='lose' @end='end'  :deck='deck')
 .wait(v-else) wait
 </template>
 

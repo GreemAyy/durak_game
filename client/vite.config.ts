@@ -9,7 +9,7 @@ const locals = {name:'My Pug'}
 
 export default defineConfig({
   plugins: [
-    vue(),pugPlugin(option, locals)
+    vue(),pugPlugin(option, locals),"@vue/language-plugin-pug"
   ],
   resolve: {
     alias: {

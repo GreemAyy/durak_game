@@ -40,7 +40,7 @@ const deck =computed<IDeck[]>(()=>playerSide.value==1?props.deck.player_1_deck:p
 }
 .enemy-deck{
     display: flex;
-    justify-content: end;
+    justify-content: center;
 }
 .single-card{
     background-color: skyblue;

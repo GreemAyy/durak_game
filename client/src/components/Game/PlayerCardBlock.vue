@@ -55,7 +55,7 @@ const pick=(card:IDeck,index:number)=>{
         opacity: .5;
     }
     .player-deck{
-        justify-content: end;
+        justify-content: center;
         display: flex;
     }
     .single-card{
