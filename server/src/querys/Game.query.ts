@@ -17,3 +17,8 @@ const id = datas.id
 const side= datas.changeSide
 return `UPDATE game set player_1_deck='${p1}',player_2_deck='${p2}',remaining_deck='${d}',playzone_deck='[]' ,side='${side}' WHERE id=${id}`
 }
+
+
+export const queryGameChangeStatus=(status:string,id:number|string)=>{
+    return `UPDATE game set status='${status}' WHERE id=${id}`
+}

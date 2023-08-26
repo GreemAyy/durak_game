@@ -37,6 +37,7 @@ const move=()=>{
             if(accessSign&&accessValue)emits('move')
             else if(isTrump&&!isEnemyTrump) emits('move')
             else console.log('no')
+            
         }
     }
 

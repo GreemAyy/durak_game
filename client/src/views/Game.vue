@@ -6,7 +6,7 @@ import Buttons from '@/components/Game/Buttons.vue';
 import {queryGameMove, queryGameRound} from '../querys/Game.query'
 import { _URL } from '@/constants';
 import { Socket, io } from 'socket.io-client';
-import { onMounted ,reactive,ref, type Ref} from 'vue';
+import { computed, onMounted ,reactive,ref, type Ref} from 'vue';
 import { useRoute } from 'vue-router';
 //@ts-ignore
 import {useStore} from 'vuex'
@@ -21,7 +21,7 @@ const userID = store.state.userStore.id
 const gameSocket = ref<Socket>()
 //@ts-ignore
 const deck = ref<Ref<IResDeck>>({id:0,player_1_deck:[],player_2_deck:[],playzone_deck:[],remaining_deck:[],side:1,status:'',trump_card:'',history:[]})
-const status = ref<string>('wait')
+const status = computed(()=>deck.value.status=='wait'?'wait':deck.value.status)
 
 onMounted(async()=>{
     const req = await queryConnectRoom(gameID,userID)
@@ -36,6 +36,9 @@ onMounted(async()=>{
             //@ts-ignore
             deck.value=msg
         })
+        gameSocket.value.on('end',()=>
+            gameSocket.value?.emit('set',gameID)
+        )
         gameSocket.value.emit('join',JSON.stringify(
             {gameID,type:resText}))
     }
@@ -57,8 +60,15 @@ const move=async()=>{
     const req:any = await queryGameMove(total)
     if(req.status==200) gameSocket.value?.emit('set',gameID)
     store.commit('setCard',null)
+    const RM =deck.value.remaining_deck
+    const p1 = deck.value.player_1_deck
+    const p2 = deck.value.player_2_deck
+    if(RM.length == 0){
+        if(p1.length==0||p2.length==0){
+            gameSocket.value?.emit('end',gameID)
+        }
+    }
 }   
-
 const end=async(data:any)=>{
     const req = await queryGameRound(data)
     //@ts-ignore
@@ -66,24 +76,32 @@ const end=async(data:any)=>{
         gameSocket.value?.emit('set',gameID)
 }
 
-const lose=async(data:any)=>{
-    const req = await queryGameRound(data)
-    //@ts-ignore
-    if(req.status==200)
-        gameSocket.value?.emit('set',gameID)
-}
 
 </script>
 
 <template lang="pug">
-.game(v-if='status!="wait"')
+.game(v-if='status=="game"')
     EnemyCardBlock(:deck='deck')
     CardZone(@move='move' :deck='deck')
     PlayerCardBlock(:deck='deck')
-    Buttons(@lose='lose' @end='end'  :deck='deck')
-.wait(v-else) wait
+    Buttons(@end='end' :deck='deck')
+.end(v-else-if="status=='end'") Игра окончена!
+.wait(v-else) Ждите игрока!
 </template>
 
-<script lang="scss">
-
-</script>
+<style lang="scss">
+    .end{
+        font-size: 50px;
+        position: absolute;
+        top: 50%;
+        left: 50%; 
+        transform: translate(-50%,-50%);       
+    }
+    .wait{
+        font-size: 50px;
+        position: absolute;
+        top: 50%;
+        left: 50%; 
+        transform: translate(-50%,-50%);       
+    }
+</style>

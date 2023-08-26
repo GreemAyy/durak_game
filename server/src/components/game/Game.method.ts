@@ -1,5 +1,5 @@
 import { DB, app } from "../../App"
-import { queryGameSetMove, queryGameSetRound } from "../../querys/Game.query"
+import { queryGameChangeStatus, queryGameSetMove, queryGameSetRound } from "../../querys/Game.query"
 
 export const getGame=async(id:string|number)=>{
     const req= await DB.query('SELECT * FROM `game` WHERE id='+id)
@@ -28,4 +28,11 @@ export const endRoundGame=async()=>{
         else 
             res.send({status:400,responseText:'error'})
     })
+}
+
+export const endGame=async(id:number|string)=>{
+    const queryStr = queryGameChangeStatus('end',id)
+    const req = await DB.query(queryStr)
+    if(req?.result) return {status:200}
+    else return {status:400}
 }

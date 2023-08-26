@@ -8,7 +8,7 @@ interface IProps{deck:IResDeck}
 
 const store = useStore()
 const props = defineProps<IProps>()
-const emits =defineEmits(['lose','end'])
+const emits = defineEmits(['lose','end'])
 const id = store.state.userStore.id
 const side = computed(()=>Number(props.deck.side))
 const playerSide = computed(()=>props.deck.player_1_id==id?2:1)
@@ -16,25 +16,24 @@ const playzone = computed(()=>props.deck.playzone_deck)
 const remainingDeck = computed(()=>props.deck.remaining_deck.length)
 
 const unlink=(object:any)=>JSON.parse(JSON.stringify(object))
+
 const flat= (array:any[][])=>{
     const flat =[]
     for(let i = 0;i< array.length;i++){
-        for(let i2 = 0;i2<array[i].length;i2++){
-           flat.push(array[i][i2]) 
-        }
-    }
+        for(let i2 = 0;i2<array[i].length;i2++){flat.push(array[i][i2])}}
     return flat
 }
 
 const end=()=>{
-    const p1 = unlink(props.deck.player_1_deck) ;
+    const p1 = unlink(props.deck.player_1_deck);
     const p2 = unlink(props.deck.player_2_deck);
     const deck = unlink(props.deck.remaining_deck);
+    //@ts-ignore
     if(playzone.value[playzone.value.length-1]?.length==2){
         if((p1.length<6||p2.length<6)&&deck.length>0){
         const calc1 = 6-p1.length
         const calc2 = 6-p2.length
-        for(let i = 0;i<calc1+calc2;i++){
+        for(let i = 0;i<(calc1>0?calc1:0)+(calc2>0?calc2:0);i++){
             let recalc1 = 6-p1.length
             let recalc2 = 6-p2.length
             if(recalc1<recalc2) p2.push(...deck.splice(0,1))
@@ -42,6 +41,7 @@ const end=()=>{
             else if(recalc1==recalc2) p1.push(...deck.splice(0,1))
             else p2.push(...deck.splice(0,1))
     }}}
+
     emits('end',{id:props.deck.id,p1,p2,deck,changeSide:side.value==1?2:1})
 }
 
@@ -66,8 +66,8 @@ const lose=()=>{
             if(recalc1<recalc2) p2.push(...deck.splice(0,1))
             else if(recalc1>recalc2) p1.push(...deck.splice(0,1))
     }}}
+
     emits('end',{id:props.deck.id,p1,p2,deck,changeSide:side.value==1?2:1})
-    
 }
 </script>
 

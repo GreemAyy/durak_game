@@ -1,7 +1,7 @@
 import socket from "../../connections/socket"
 import { Server } from "socket.io"
 import { http } from "../../App";
-import { endRoundGame, getGame, moveGame } from "./Game.method";
+import { endGame, endRoundGame, getGame, moveGame } from "./Game.method";
 let IO:Server;
 
 const GameComponent=async()=>{
@@ -17,6 +17,10 @@ async function gameSocket(){
             const parse = JSON.parse(data)
             socket.join(parse.gameID)
             IO.to(parse.gameID).emit('join',parse.type=='wait'?false:true)
+        })
+        socket.on('end',async(id:string|number)=>{
+            const req = await endGame(id)
+            IO.to(String(id)).emit('end')
         })
         socket.on('set',async(id:string)=>{
             const req = await getGame(id)
