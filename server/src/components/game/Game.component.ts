@@ -27,7 +27,6 @@ async function gameSocket(){
             IO.to(id).emit('set',req)
         })
     })
-
 }
 
 export default GameComponent

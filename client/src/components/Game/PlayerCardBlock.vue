@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 //@ts-ignore
 import {useStore} from 'vuex'
 import { type IResDeck ,type IDeck} from '@/tools/interfaces';
@@ -25,6 +25,8 @@ const pick=(card:IDeck,index:number)=>{
     if(playerSide.value==side.value)
         store.commit('setCard',{card,index,side:playerSide.value,changeSide:side.value==1?2:1})
 }
+
+watch(()=>store.state.gameStore.pickedCard,NV=>{if(NV==null)picked.value=-1})
 
 </script>
 
